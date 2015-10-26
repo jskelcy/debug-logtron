@@ -57,6 +57,7 @@ function DebugLogBackend(namespace, opts) {
     /*eslint no-process-env: 0*/
     self.env = opts.env || process.env;
     self.namespace = namespace.toUpperCase();
+    self.globalWhitelist = opts.globalWhitelist;
 
     self.whitelists = {
         fatal: {},
@@ -112,9 +113,10 @@ DebugLogStream.prototype.write = function write(logMessage, cb) {
 
     var logRecord = logMessage.toLogRecord();
     var levelName = logRecord.levelName;
+    console.log(self.backend.globalWhitelist);
 
     var whitelist = self.backend.whitelists[levelName];
-    if (whitelist[logRecord.msg]) {
+    if (whitelist[logRecord.msg] || self.backend.globalWhitelist) {
         self.backend.records.push(logRecord);
 
         if (cb) {

@@ -402,6 +402,23 @@ test('can whitelist errors', function t(assert) {
     });
 });
 
+test('can gloablWhitelist errors', function t(assert) {
+    var logger = allocLogger({
+        globalWhitelist: true
+    });
+
+    logger.error('oh hi');
+
+    assert.equal(logger.items().length, 1);
+    assert.equal(logger.items()[0].msg, 'oh hi');
+
+    logger.error('oh hi', {}, function onMsg() {
+        assert.equal(logger.items().length, 2);
+
+        assert.end();
+    });
+});
+
 function allocLogger(opts) {
     opts = opts || {};
     var logger = DebugLogtron('debuglogtrontestcode', {
@@ -416,7 +433,8 @@ function allocLogger(opts) {
             }
         },
         trace: true,
-        colors: opts.colors
+        colors: opts.colors,
+        globalWhitelist: opts.globalWhitelist
     });
     logger.lines = [];
 
